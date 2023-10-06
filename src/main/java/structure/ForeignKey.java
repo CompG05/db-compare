@@ -1,45 +1,41 @@
 package structure;
 
+import java.util.List;
 import java.util.Objects;
 
 public class ForeignKey {
-    String columnName;
+    List<String> columnNames;
     String referencedTable;
-    String referencedColumn;
+    List<String> referencedColumns;
 
-    public ForeignKey(String columnName, String referencedTable, String referencedColumn) {
-        this.columnName = columnName;
+    public ForeignKey(List<String> columnNames, String referencedTable, List<String> referencedColumns) {
+        this.columnNames = columnNames;
         this.referencedTable = referencedTable;
-        this.referencedColumn = referencedColumn;
+        this.referencedColumns = referencedColumns;
     }
 
-// Preguntar:
-//  db A
-//    tabla a
-//        x string
-//        y string references b (z)
-//
-//    tabla b
-//        z string
-// ------------------------------------
-//  db B
-//    tabla a
-//        x string references b (z)
-//        y string
-//
-//    tabla b
-//        z string
+    public ForeignKey(String referencedTable) {
+        this.referencedTable = referencedTable;
+    }
 
-    public String getColumnName() {
-        return columnName;
+    public void addColumnName(String columnName) {
+        columnNames.add(columnName);
+    }
+
+    public void addReferencedColumn(String referencedColumn) {
+        referencedColumns.add(referencedColumn);
+    }
+
+    public List<String> getColumnNames() {
+        return columnNames;
     }
 
     public String getReferencedTable() {
         return referencedTable;
     }
 
-    public String getReferencedColumn() {
-        return referencedColumn;
+    public List<String> getReferencedColumns() {
+        return referencedColumns;
     }
 
     @Override
@@ -47,20 +43,16 @@ public class ForeignKey {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ForeignKey that = (ForeignKey) o;
-        return Objects.equals(columnName, that.columnName) && Objects.equals(referencedTable, that.referencedTable) && Objects.equals(referencedColumn, that.referencedColumn);
-    }
-
-    public boolean hasSameStructure(ForeignKey key) {
-        return Objects.equals(referencedTable, key.referencedTable) && Objects.equals(referencedColumn, key.referencedColumn);
+        return Objects.equals(columnNames, that.columnNames) && Objects.equals(referencedTable, that.referencedTable) && Objects.equals(referencedColumns, that.referencedColumns);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(columnName, referencedTable, referencedColumn);
+        return Objects.hash(columnNames, referencedTable, referencedColumns);
     }
 
     @Override
     public String toString() {
-        return "FOREIGN KEY (" + columnName + ") REFERENCES " + referencedTable + "(" + referencedColumn + ")";
+        return "FOREIGN KEY (" + columnNames + ") REFERENCES " + referencedTable + "(" + referencedColumns + ")";
     }
 }

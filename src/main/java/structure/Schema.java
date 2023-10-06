@@ -8,8 +8,8 @@ import java.util.stream.Collectors;
 
 public class Schema {
     public String name;
-    public Set<Table> tables = null;
-    public Set<Procedure> procedures = null;
+    public Set<Table> tables;
+    public Set<Procedure> procedures;
 
     public Schema(String name) {
         this(name, new HashSet<>(), new HashSet<>());

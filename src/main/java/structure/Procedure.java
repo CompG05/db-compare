@@ -5,13 +5,13 @@ import java.util.stream.Collectors;
 
 public class Procedure {
     String name;
-    Set<Argument> arguments;
+    List<Argument> arguments;
 
     public Procedure(String name) {
-        this(name, new HashSet<>());
+        this(name, new LinkedList<>());
     }
 
-    public Procedure(String name, Set<Argument> arguments) {
+    public Procedure(String name, List<Argument> arguments) {
         this.name = name;
         this.arguments = arguments;
     }
@@ -20,7 +20,7 @@ public class Procedure {
         return name;
     }
 
-    public Set<Argument> getArguments() {
+    public List<Argument> getArguments() {
         return arguments;
     }
 

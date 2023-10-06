@@ -1,6 +1,7 @@
 package structure;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -8,7 +9,7 @@ public class Table {
     String name;
     Set<Column> columns;
     Set<String> primaryKeys;
-    Set<Set<String>> uniqueKeys;
+    Set<List<String>> indices;
     Set<ForeignKey> foreignKeys;
     Set<Trigger> triggers;
 
@@ -16,11 +17,11 @@ public class Table {
         this(name, new HashSet<>(), new HashSet<>(), new HashSet<>(), new HashSet<>(), new HashSet<>());
     }
 
-    public Table(String name, Set<Column> columns, Set<String> primaryKeys, Set<Set<String>> uniqueKeys, Set<ForeignKey> foreignKeys, Set<Trigger> triggers) {
+    public Table(String name, Set<Column> columns, Set<String> primaryKeys, Set<List<String>> indices, Set<ForeignKey> foreignKeys, Set<Trigger> triggers) {
         this.name = name;
         this.columns = columns;
         this.primaryKeys = primaryKeys;
-        this.uniqueKeys = uniqueKeys;
+        this.indices = indices;
         this.foreignKeys = foreignKeys;
         this.triggers = triggers;
     }
@@ -58,12 +59,12 @@ public class Table {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Table table = (Table) o;
-        return Objects.equals(name, table.name) && Objects.equals(columns, table.columns) && Objects.equals(primaryKeys, table.primaryKeys) && Objects.equals(uniqueKeys, table.uniqueKeys) && Objects.equals(foreignKeys, table.foreignKeys) && Objects.equals(triggers, table.triggers);
+        return Objects.equals(name, table.name) && Objects.equals(columns, table.columns) && Objects.equals(primaryKeys, table.primaryKeys) && Objects.equals(indices, table.indices) && Objects.equals(foreignKeys, table.foreignKeys) && Objects.equals(triggers, table.triggers);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, columns, primaryKeys, uniqueKeys, foreignKeys, triggers);
+        return Objects.hash(name, columns, primaryKeys, indices, foreignKeys, triggers);
     }
 
     @Override
@@ -78,9 +79,9 @@ public class Table {
            .append(String.join(", ", primaryKeys))
            .append(")");
 
-        for (Set<String> uniqueKey : uniqueKeys)
-            str.append("\tUNIQUE KEY (")
-               .append(String.join(", ", uniqueKey))
+        for (List<String> index : indices)
+            str.append("\tINDEX(")
+               .append(String.join(", ", index))
                .append(")\n");
 
         for (ForeignKey foreignKey : foreignKeys)
