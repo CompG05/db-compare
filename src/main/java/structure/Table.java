@@ -7,18 +7,22 @@ import java.util.Set;
 public class Table {
     String name;
     Set<Column> columns;
+    Set<String> primaryKeys;
+    Set<Set<String>> uniqueKeys;
     Set<ForeignKey> foreignKeys;
     Set<Trigger> triggers;
 
-    public Table(String name, Set<Column> columns, Set<ForeignKey> foreignKeys, Set<Trigger> triggers) {
-        this.name = name;
-        this.columns = columns;
-        this.foreignKeys = foreignKeys;
-        this.triggers = triggers;
+    public Table(String name) {
+        this(name, new HashSet<>(), new HashSet<>(), new HashSet<>(), new HashSet<>(), new HashSet<>());
     }
 
-    public Table(String name) {
-        this(name, new HashSet<>(), new HashSet<>(), new HashSet<>());
+    public Table(String name, Set<Column> columns, Set<String> primaryKeys, Set<Set<String>> uniqueKeys, Set<ForeignKey> foreignKeys, Set<Trigger> triggers) {
+        this.name = name;
+        this.columns = columns;
+        this.primaryKeys = primaryKeys;
+        this.uniqueKeys = uniqueKeys;
+        this.foreignKeys = foreignKeys;
+        this.triggers = triggers;
     }
 
     public String getName() {
@@ -54,12 +58,12 @@ public class Table {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Table table = (Table) o;
-        return name.equals(table.name) && Objects.equals(columns, table.columns) && Objects.equals(foreignKeys, table.foreignKeys) && Objects.equals(triggers, table.triggers);
+        return Objects.equals(name, table.name) && Objects.equals(columns, table.columns) && Objects.equals(primaryKeys, table.primaryKeys) && Objects.equals(uniqueKeys, table.uniqueKeys) && Objects.equals(foreignKeys, table.foreignKeys) && Objects.equals(triggers, table.triggers);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(columns, foreignKeys, triggers);
+        return Objects.hash(name, columns, primaryKeys, uniqueKeys, foreignKeys, triggers);
     }
 
     @Override
@@ -70,8 +74,20 @@ public class Table {
         for (Column column : columns)
             str.append("\t" + column.toString() + "\n");
 
-        for (Column column : columns)
-            str.append("\t" + column.toString() + "\n");
+        str.append("\tPRIMARY KEY (")
+           .append(String.join(", ", primaryKeys))
+           .append(")");
+
+        for (Set<String> uniqueKey : uniqueKeys)
+            str.append("\tUNIQUE KEY (")
+               .append(String.join(", ", uniqueKey))
+               .append(")\n");
+
+        for (ForeignKey foreignKey : foreignKeys)
+            str.append("\t" + foreignKey.toString() + "\n");
+
+        for (Trigger trigger : triggers)
+            str.append("\t" + trigger.toString() + "\n");
 
         return str.toString();
     }
