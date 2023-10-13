@@ -1,15 +1,12 @@
 package structure;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public class Table {
     String name;
     Set<Column> columns;
     Set<String> primaryKeys;
-    Set<List<String>> indices;
+    Set<Set<OrderedColumn>> indices;
     Set<ForeignKey> foreignKeys;
     Set<Trigger> triggers;
 
@@ -17,7 +14,7 @@ public class Table {
         this(name, new HashSet<>(), new HashSet<>(), new HashSet<>(), new HashSet<>(), new HashSet<>());
     }
 
-    public Table(String name, Set<Column> columns, Set<String> primaryKeys, Set<List<String>> indices, Set<ForeignKey> foreignKeys, Set<Trigger> triggers) {
+    public Table(String name, Set<Column> columns, Set<String> primaryKeys, Set<Set<OrderedColumn>> indices, Set<ForeignKey> foreignKeys, Set<Trigger> triggers) {
         this.name = name;
         this.columns = columns;
         this.primaryKeys = primaryKeys;
@@ -36,6 +33,22 @@ public class Table {
 
     public void addColumn(Column column) {
         columns.add(column);
+    }
+
+    public Set<String> getPrimaryKeys() {
+        return primaryKeys;
+    }
+
+    public void addPrimaryKeys(String primaryKey) {
+        this.primaryKeys.add(primaryKey);
+    }
+
+    public Set<Set<OrderedColumn>> getIndices() {
+        return indices;
+    }
+
+    public void addIndex(Set<OrderedColumn> index) {
+        this.indices.add(index);
     }
 
     public Set<ForeignKey> getForeignKeys() {
@@ -79,10 +92,10 @@ public class Table {
            .append(String.join(", ", primaryKeys))
            .append(")");
 
-        for (List<String> index : indices)
+        for (Set<OrderedColumn> index : indices)
             str.append("\tINDEX(")
-               .append(String.join(", ", index))
-               .append(")\n");
+                    .append(String.join(", ", OrderedColumn.getSorted(index)))
+                    .append(")\n");
 
         for (ForeignKey foreignKey : foreignKeys)
             str.append("\t" + foreignKey.toString() + "\n");
