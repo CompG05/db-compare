@@ -5,7 +5,7 @@ import structure.*;
 import java.sql.*;
 import java.util.*;
 
-public class MyLoader {
+public class MyLoader implements Loader {
     static String driver = "com.mysql.cj.jdbc.Driver";
     private Connection connection;
     private String catalog;
@@ -69,17 +69,19 @@ public class MyLoader {
             columnSet.add(new Column(
                     columns.getString("COLUMN_NAME"),
                     columns.getString("TYPE_NAME"),
-                    columns.getString("TYPE_SIZE")));
+                    columns.getString("COLUMN_SIZE")));
 
         return columnSet;
     }
 
-    private Set<String> loadPrimaryKeys(DatabaseMetaData metaData, String tableName) throws SQLException {
-        Set<String> primaryKeysSet = new HashSet<>();
+    private Set<OrderedColumn> loadPrimaryKeys(DatabaseMetaData metaData, String tableName) throws SQLException {
+        Set<OrderedColumn> primaryKeysSet = new HashSet<>();
         ResultSet primaryKeys = metaData.getPrimaryKeys(catalog, null, tableName);
 
         while (primaryKeys.next()) {
-            primaryKeysSet.add(primaryKeys.getString("COLUMN_NAME"));
+            primaryKeysSet.add(new OrderedColumn(
+                    primaryKeys.getString("COLUMN_NAME"),
+                    primaryKeys.getInt("KEY_SEQ")));
         }
 
         return primaryKeysSet;
