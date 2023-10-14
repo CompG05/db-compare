@@ -5,7 +5,7 @@ import java.util.*;
 public class Table {
     String name;
     Set<Column> columns;
-    Set<String> primaryKeys;
+    Set<OrderedColumn> primaryKeys;
     Set<Set<OrderedColumn>> indices;
     Set<ForeignKey> foreignKeys;
     Set<Trigger> triggers;
@@ -14,7 +14,7 @@ public class Table {
         this(name, new HashSet<>(), new HashSet<>(), new HashSet<>(), new HashSet<>(), new HashSet<>());
     }
 
-    public Table(String name, Set<Column> columns, Set<String> primaryKeys, Set<Set<OrderedColumn>> indices, Set<ForeignKey> foreignKeys, Set<Trigger> triggers) {
+    public Table(String name, Set<Column> columns, Set<OrderedColumn> primaryKeys, Set<Set<OrderedColumn>> indices, Set<ForeignKey> foreignKeys, Set<Trigger> triggers) {
         this.name = name;
         this.columns = columns;
         this.primaryKeys = primaryKeys;
@@ -35,12 +35,16 @@ public class Table {
         columns.add(column);
     }
 
-    public Set<String> getPrimaryKeys() {
+    public Set<OrderedColumn> getPrimaryKeys() {
         return primaryKeys;
     }
 
-    public void addPrimaryKeys(String primaryKey) {
+    public void addPrimaryKey(OrderedColumn primaryKey) {
         this.primaryKeys.add(primaryKey);
+    }
+
+    public void addPrimaryKey(String primaryKey, int order) {
+        this.primaryKeys.add(new OrderedColumn(primaryKey, order));
     }
 
     public Set<Set<OrderedColumn>> getIndices() {
@@ -83,25 +87,25 @@ public class Table {
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
-        str.append("Table ").append(name);
+        str.append("Table ").append(name).append('\n');
 
         for (Column column : columns)
-            str.append("\t" + column.toString() + "\n");
+            str.append("\t\t\t").append(column.toString()).append('\n');
 
-        str.append("\tPRIMARY KEY (")
-           .append(String.join(", ", primaryKeys))
-           .append(")");
+        str.append("\t\t\tPRIMARY KEY (")
+           .append(String.join(", ", OrderedColumn.getSorted(primaryKeys)))
+           .append(")\n");
 
         for (Set<OrderedColumn> index : indices)
-            str.append("\tINDEX(")
+            str.append("\t\t\tINDEX (")
                     .append(String.join(", ", OrderedColumn.getSorted(index)))
                     .append(")\n");
 
         for (ForeignKey foreignKey : foreignKeys)
-            str.append("\t" + foreignKey.toString() + "\n");
+            str.append("\t\t\t").append(foreignKey.toString()).append('\n');
 
         for (Trigger trigger : triggers)
-            str.append("\t" + trigger.toString() + "\n");
+            str.append("\t\t\t").append(trigger.toString()).append('\n');
 
         return str.toString();
     }
