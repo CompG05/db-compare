@@ -4,17 +4,23 @@ import java.util.Objects;
 
 public class Argument {
     String name;
+    int order;
     ArgumentType type;
     String dataType;
 
-    public Argument(String name, ArgumentType type, String dataType) {
+    public Argument(String name, int order, ArgumentType type, String dataType) {
         this.name = name;
+        this.order = order;
         this.type = type;
         this.dataType = dataType;
     }
 
     public String getName() {
         return name;
+    }
+
+    public int getOrder() {
+        return order;
     }
 
     public ArgumentType getType() {
@@ -30,12 +36,12 @@ public class Argument {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Argument argument = (Argument) o;
-        return Objects.equals(name, argument.name) && type == argument.type && Objects.equals(dataType, argument.dataType);
+        return order == argument.order && Objects.equals(name, argument.name) && type == argument.type && Objects.equals(dataType, argument.dataType);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, type, dataType);
+        return Objects.hash(name, order, type, dataType);
     }
 
     @Override

@@ -25,6 +25,8 @@ public class LoaderTest {
     @BeforeAll
     public static void setUp() {
         try {
+            // Read config file
+
             ObjectMapper objectMapper = new ObjectMapper();
             String configFilename = "src/test/java/loader/config.json";
             JsonNode jsonNode = objectMapper.readTree(new FileReader(configFilename));
@@ -34,13 +36,23 @@ public class LoaderTest {
             username = jsonNode.get("username").asText();
             password = jsonNode.get("password").asText();
 
+
+            // Get a connection
+
             String fullUrl = "jdbc:mysql://" + url + "/";
 
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection connection = DriverManager.getConnection(fullUrl, username, password);
 
+
+            // Run initialization script
+
             ScriptRunner scriptRunner = new ScriptRunner(connection);
             scriptRunner.runScript(new FileReader(System.getProperty("user.dir") + "/src/test/java/loader/test-script.sql"));
+
+            scriptRunner.setSendFullScript(true);
+            scriptRunner.runScript(new FileReader(System.getProperty("user.dir") + "/src/test/java/loader/trigger.sql"));
+            scriptRunner.runScript(new FileReader(System.getProperty("user.dir") + "/src/test/java/loader/procedure.sql"));
 
             loader = new MyLoader(url, catalog, username, password);
         } catch (IOException | ClassNotFoundException | SQLException e) {

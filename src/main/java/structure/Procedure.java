@@ -5,13 +5,13 @@ import java.util.stream.Collectors;
 
 public class Procedure {
     String name;
-    List<Argument> arguments;
+    Set<Argument> arguments;
 
     public Procedure(String name) {
-        this(name, new LinkedList<>());
+        this(name, new HashSet<>());
     }
 
-    public Procedure(String name, List<Argument> arguments) {
+    public Procedure(String name, Set<Argument> arguments) {
         this.name = name;
         this.arguments = arguments;
     }
@@ -20,7 +20,7 @@ public class Procedure {
         return name;
     }
 
-    public List<Argument> getArguments() {
+    public Set<Argument> getArguments() {
         return arguments;
     }
 
@@ -43,12 +43,11 @@ public class Procedure {
 
     @Override
     public String toString() {
-        StringBuilder str = new StringBuilder();
-        str.append(name).append("(");
-
-        List<String> argStrings = arguments.stream().map(Argument::toString).collect(Collectors.toList());
-        str.append(String.join(", ", argStrings));
-
-        return str.toString();
+        return name + "(" +
+                arguments
+                        .stream().sorted(Comparator.comparingInt(Argument::getOrder))
+                        .map(Argument::toString)
+                        .collect(Collectors.joining(", "))
+                + ")";
     }
 }
