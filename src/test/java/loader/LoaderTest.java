@@ -52,6 +52,7 @@ public class LoaderTest {
 
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection connection = DriverManager.getConnection(fullUrl, username, password);
+            initializeDatabase(connection, "db_compare_test");
 
 
             // Run initialization script
@@ -191,5 +192,12 @@ public class LoaderTest {
         } else {
             throw new RuntimeException("Table not found");
         }
+    }
+
+    private static void initializeDatabase(Connection connection, String databaseName) throws SQLException {
+        Statement statement = connection.createStatement();
+        statement.execute("drop database if exists " + databaseName);
+        statement.execute("create database " + databaseName);
+        statement.execute("use " + databaseName);
     }
 }
