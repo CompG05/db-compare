@@ -83,7 +83,7 @@ public class LoaderTest {
     public void tablesTest() {
         Set<String> actualTableNames = tables.stream().map(Table::getName).collect(Collectors.toSet());
         Set<String> expectedTableNames = new HashSet<>(Arrays.asList(
-                "example", "foreign_example"
+                "example", "foreign_example", "table_with_indices", "imported_table", "table_with_foreign_keys"
         ));
         assertEquals(expectedTableNames, actualTableNames);
     }
@@ -93,9 +93,10 @@ public class LoaderTest {
         Table exampleTable = findTable("example");
         Set<Column> actualColumns = exampleTable.getColumns();
         Set<Column> expectedColumns = new HashSet<>(Arrays.asList(
-                new Column("attr1", "INT", "10"),
-                new Column("attr6", "INT", "10"),
-                new Column("attr2", "VARCHAR", "20")
+                new Column("attr1", "INT", "10", false),
+                new Column("attr6", "INT", "10", false),
+                new Column("attr2", "VARCHAR", "20", false),
+                new Column("attr3", "VARCHAR", "20", true)
         ));
         assertEquals(expectedColumns, actualColumns);
     }
@@ -105,11 +106,11 @@ public class LoaderTest {
         Table exampleTable = findTable("example");
         Set<OrderedColumn> actualPks = exampleTable.getPrimaryKeys();
         Set<OrderedColumn> expectedPks = new HashSet<>(Arrays.asList(
-                new OrderedColumn("attr3", 1),
-                new OrderedColumn("attr4", 2)
+                new OrderedColumn("attr1", 1),
+                new OrderedColumn("attr6", 2)
         ));
         
-     assertEquals(expectedPks, actualPks);
+        assertEquals(expectedPks, actualPks);
     }
 
     @Test

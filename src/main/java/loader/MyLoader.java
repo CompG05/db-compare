@@ -69,7 +69,8 @@ public class MyLoader implements Loader {
             columnSet.add(new Column(
                     columns.getString("COLUMN_NAME"),
                     columns.getString("TYPE_NAME"),
-                    columns.getString("COLUMN_SIZE")));
+                    columns.getString("COLUMN_SIZE"),
+                    columns.getBoolean("NULLABLE")));
 
         return columnSet;
     }

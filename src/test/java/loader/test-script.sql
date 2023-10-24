@@ -1,7 +1,8 @@
 create table example (
     attr1 int,
     attr6 int,
-    attr2 varchar(20),
+    attr2 varchar(20) not null,
+    attr3 varchar(20),
     PRIMARY KEY (attr1, attr6)
 );
 
