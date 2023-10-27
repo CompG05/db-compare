@@ -23,6 +23,11 @@ public class MyLoader implements Loader {
         this.connection = DriverManager.getConnection(fullURL, username, password);
     }
 
+    public MyLoader(Connection connection, String schema) {
+        this.connection = connection;
+        this.catalog = schema;
+    }
+
     public Schema loadSchema() {
         try {
             DatabaseMetaData metaData;
