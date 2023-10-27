@@ -34,7 +34,7 @@ public class Schema {
     }
 
     public Set<Procedure> getProcedures() {
-        return procedures;
+        return new HashSet<>(procedures);
     }
 
     @Override
