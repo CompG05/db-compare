@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static structure.ArgumentType.*;
+import static utils.Utils.*;
 
 public class LoaderTest {
     static String url;
@@ -33,25 +34,17 @@ public class LoaderTest {
 
     @BeforeAll
     public static void setUp() {
+        String configFileName = "src/test/java/loader/config.json";
         try {
             // Read config file
+            JsonNode config = loadConfig(configFileName);
 
-            ObjectMapper objectMapper = new ObjectMapper();
-            String configFilename = "src/test/java/loader/config.json";
-            JsonNode jsonNode = objectMapper.readTree(new FileReader(configFilename));
+            url = config.get("url").asText();
+            catalog = config.get("catalog").asText();
+            username = config.get("username").asText();
+            password = config.get("password").asText();
 
-            url = jsonNode.get("url").asText();
-            catalog = jsonNode.get("catalog").asText();
-            username = jsonNode.get("username").asText();
-            password = jsonNode.get("password").asText();
-
-
-            // Get a connection
-
-            String fullUrl = "jdbc:mysql://" + url + "/";
-
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection connection = DriverManager.getConnection(fullUrl, username, password);
+            Connection connection = getConnection(configFileName);
             initializeDatabase(connection, "db_compare_test");
 
 
@@ -73,8 +66,7 @@ public class LoaderTest {
         }
     }
 
-
-    @Test
+    // @Test
     public void test01() {
         System.out.println(schema);
     }
@@ -193,12 +185,5 @@ public class LoaderTest {
         } else {
             throw new RuntimeException("Table not found");
         }
-    }
-
-    private static void initializeDatabase(Connection connection, String databaseName) throws SQLException {
-        Statement statement = connection.createStatement();
-        statement.execute("drop database if exists " + databaseName);
-        statement.execute("create database " + databaseName);
-        statement.execute("use " + databaseName);
     }
 }
