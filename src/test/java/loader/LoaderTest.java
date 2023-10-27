@@ -104,7 +104,7 @@ public class LoaderTest {
     @Test
     public void primaryKeysTest() {
         Table exampleTable = findTable("example");
-        Set<OrderedColumn> actualPks = exampleTable.getPrimaryKeys();
+        Set<OrderedColumn> actualPks = exampleTable.getPrimaryKey();
         Set<OrderedColumn> expectedPks = new HashSet<>(Arrays.asList(
                 new OrderedColumn("attr1", 1),
                 new OrderedColumn("attr6", 2)
