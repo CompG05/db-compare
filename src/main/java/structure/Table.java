@@ -5,7 +5,7 @@ import java.util.*;
 public class Table {
     String name;
     Set<Column> columns;
-    Set<OrderedColumn> primaryKeys;
+    Set<OrderedColumn> primaryKey;
     Set<Set<OrderedColumn>> indices;
     Set<ForeignKey> foreignKeys;
     Set<Trigger> triggers;
@@ -14,10 +14,10 @@ public class Table {
         this(name, new HashSet<>(), new HashSet<>(), new HashSet<>(), new HashSet<>(), new HashSet<>());
     }
 
-    public Table(String name, Set<Column> columns, Set<OrderedColumn> primaryKeys, Set<Set<OrderedColumn>> indices, Set<ForeignKey> foreignKeys, Set<Trigger> triggers) {
+    public Table(String name, Set<Column> columns, Set<OrderedColumn> primaryKey, Set<Set<OrderedColumn>> indices, Set<ForeignKey> foreignKeys, Set<Trigger> triggers) {
         this.name = name;
         this.columns = columns;
-        this.primaryKeys = primaryKeys;
+        this.primaryKey = primaryKey;
         this.indices = indices;
         this.foreignKeys = foreignKeys;
         this.triggers = triggers;
@@ -28,31 +28,43 @@ public class Table {
     }
 
     public Set<Column> getColumns() {
-        return columns;
+        return new HashSet<>(columns);
     }
 
     public void addColumn(Column column) {
         columns.add(column);
     }
 
-    public Set<OrderedColumn> getPrimaryKeys() {
-        return primaryKeys;
+    public void addColumns(Collection<Column> columns) {
+        this.columns.addAll(columns);
     }
 
-    public void addPrimaryKey(OrderedColumn primaryKey) {
-        this.primaryKeys.add(primaryKey);
+    public Set<OrderedColumn> getPrimaryKey() {
+        return new HashSet<>(primaryKey);
     }
 
-    public void addPrimaryKey(String primaryKey, int order) {
-        this.primaryKeys.add(new OrderedColumn(primaryKey, order));
+    public void addPrimaryKeyColumn(OrderedColumn primaryKey) {
+        this.primaryKey.add(primaryKey);
+    }
+
+    public void addPrimaryKeyColumn(String primaryKey, int order) {
+        this.primaryKey.add(new OrderedColumn(primaryKey, order));
+    }
+
+    public void addPrimaryKey(Collection<OrderedColumn> primaryKeys) {
+        this.primaryKey.addAll(primaryKeys);
     }
 
     public Set<Set<OrderedColumn>> getIndices() {
-        return indices;
+        return new HashSet<>(indices);
     }
 
     public void addIndex(Set<OrderedColumn> index) {
         this.indices.add(index);
+    }
+
+    public void addIndices(Collection<Set<OrderedColumn>> indices) {
+        this.indices.addAll(indices);
     }
 
     public Set<ForeignKey> getForeignKeys() {
@@ -63,12 +75,20 @@ public class Table {
         foreignKeys.add(foreignKey);
     }
 
+    public void addForeignKeys(Collection<ForeignKey> foreignKeys) {
+        this.foreignKeys.addAll(foreignKeys);
+    }
+
     public Set<Trigger> getTriggers() {
-        return triggers;
+        return new HashSet<>(triggers);
     }
 
     public void addTrigger(Trigger trigger) {
         triggers.add(trigger);
+    }
+
+    public void addTriggers(Collection<Trigger> triggers){
+        this.triggers.addAll(triggers);
     }
 
     @Override
@@ -76,12 +96,12 @@ public class Table {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Table table = (Table) o;
-        return Objects.equals(name, table.name) && Objects.equals(columns, table.columns) && Objects.equals(primaryKeys, table.primaryKeys) && Objects.equals(indices, table.indices) && Objects.equals(foreignKeys, table.foreignKeys) && Objects.equals(triggers, table.triggers);
+        return Objects.equals(name, table.name) && Objects.equals(columns, table.columns) && Objects.equals(primaryKey, table.primaryKey) && Objects.equals(indices, table.indices) && Objects.equals(foreignKeys, table.foreignKeys) && Objects.equals(triggers, table.triggers);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, columns, primaryKeys, indices, foreignKeys, triggers);
+        return Objects.hash(name, columns, primaryKey, indices, foreignKeys, triggers);
     }
 
     @Override
@@ -92,14 +112,18 @@ public class Table {
         for (Column column : columns)
             str.append("\t\t\t").append(column.toString()).append('\n');
 
-        str.append("\t\t\tPRIMARY KEY (")
-           .append(String.join(", ", OrderedColumn.getSorted(primaryKeys)))
-           .append(")\n");
-
-        for (Set<OrderedColumn> index : indices)
-            str.append("\t\t\tINDEX (")
-                    .append(String.join(", ", OrderedColumn.getSorted(index)))
+        if (!primaryKey.isEmpty()) {
+            str.append("\t\t\tPRIMARY KEY (")
+                    .append(String.join(", ", OrderedColumn.getSorted(primaryKey)))
                     .append(")\n");
+        }
+
+        if (!indices.isEmpty()) {
+            for (Set<OrderedColumn> index : indices)
+                str.append("\t\t\tINDEX (")
+                        .append(String.join(", ", OrderedColumn.getSorted(index)))
+                        .append(")\n");
+        }
 
         for (ForeignKey foreignKey : foreignKeys)
             str.append("\t\t\t").append(foreignKey.toString()).append('\n');
