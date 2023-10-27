@@ -3,6 +3,7 @@ package structure;
 
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -59,5 +60,13 @@ public class Schema {
                 "\nProcedures:\n" +
                 "\t\t" + procedures.stream().map(Procedure::toString).collect(Collectors.joining("\n\t\t")) +
                 "\n";
+    }
+
+    public Optional<Table> getTable(String name) {
+        for (Table table : tables) {
+            if (table.getName().equals(name))
+                return Optional.of(table);
+        }
+        return Optional.empty();
     }
 }
