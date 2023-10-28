@@ -2,7 +2,9 @@ package utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.ibatis.jdbc.ScriptRunner;
 
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
@@ -11,17 +13,31 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class Utils {
-    public static Connection getConnection(String filename) throws IOException, ClassNotFoundException, SQLException {
+    public static Connection getConnection(String filename, String catalog) throws IOException, ClassNotFoundException, SQLException {
         JsonNode jsonNode = loadConfig(filename);
 
         String url = jsonNode.get("url").asText();
         String username = jsonNode.get("username").asText();
         String password = jsonNode.get("password").asText();
 
-        String fullUrl = "jdbc:mysql://" + url + "/";
+        String fullUrl = "jdbc:mysql://" + url + "/"  + catalog;
 
         Class.forName("com.mysql.cj.jdbc.Driver");
         return DriverManager.getConnection(fullUrl, username, password);
+    }
+
+    public static Connection getConnection(String filename) throws IOException, ClassNotFoundException, SQLException {
+        return getConnection(filename, "");
+    }
+
+    public static void runScript(Connection connection, String filename) throws FileNotFoundException {
+        runScript(connection, filename, false);
+    }
+
+    public static void runScript(Connection connection, String filename, boolean sendFullScript) throws FileNotFoundException {
+        ScriptRunner scriptRunner = new ScriptRunner(connection);
+        scriptRunner.setSendFullScript(sendFullScript);
+        scriptRunner.runScript(new FileReader(filename));
     }
 
     public static JsonNode loadConfig(String filename) throws IOException {
