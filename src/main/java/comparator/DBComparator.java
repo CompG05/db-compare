@@ -29,13 +29,14 @@ public class DBComparator {
         Set<String> tableNames1 = getUniqueTables(s1, s2);
         Set<String> tableNames2 = getUniqueTables(s2, s1);
         Set<Pair<Table, Table>> commonTablesDiffs = getCommonTablesDiffs(s1, s2);
-        Set<Procedure> procedures1 = getDifferentProcedures(s1, s2);
-        Set<Procedure> procedures2 = getDifferentProcedures(s2, s1);
+        Set<Procedure> procedures1 = getUniqueProcedures(s1, s2);
+        Set<Procedure> procedures2 = getUniqueProcedures(s2, s1);
 
         return new DBComparator(
                 tableNames1, tableNames2,
                 commonTablesDiffs,
-                procedures1, procedures2);
+                procedures1, procedures2
+        );
     }
 
     private static Set<String> getUniqueTables(Schema s1, Schema s2) {
@@ -46,12 +47,8 @@ public class DBComparator {
         return s1TableNames;
     }
 
-    private static Set<String> getCommonTables(Schema s1, Schema s2) {
-        Set<String> s1TableNames = s1.getTables().stream().map(Table::getName).collect(Collectors.toSet());
-        Set<String> s2TableNames = s2.getTables().stream().map(Table::getName).collect(Collectors.toSet());
-
-        s1TableNames.retainAll(s2TableNames);
-        return s1TableNames;
+    public Pair<Set<String>, Set<String>> getUniqueTables() {
+        return new Pair<>(new HashSet<>(tableNames1), new HashSet<>(tableNames2));
     }
 
     private static Set<Pair<Table, Table>> getCommonTablesDiffs(Schema s1, Schema s2) {
@@ -67,6 +64,10 @@ public class DBComparator {
         }
 
         return commonTablesDiffs;
+    }
+
+    public Set<Pair<Table, Table>> getCommonTablesDiffs() {
+        return new HashSet<>(commonTablesDiffs);
     }
 
     private static Optional<Pair<Table, Table>> compareTables(Table table, Table otherTable) {
@@ -92,7 +93,7 @@ public class DBComparator {
 
         // Primary keys
         Set<OrderedColumn> primaryKey1 = table.getPrimaryKey();
-        Set<OrderedColumn> primaryKey2 = table.getPrimaryKey();
+        Set<OrderedColumn> primaryKey2 = otherTable.getPrimaryKey();
 
         if (!primaryKey1.equals(primaryKey2)) {
             change = true;
@@ -144,11 +145,17 @@ public class DBComparator {
         else return Optional.empty();
     }
 
-    private static Set<Procedure> getDifferentProcedures(Schema s1, Schema s2) {
+    private static Set<Procedure> getUniqueProcedures(Schema s1, Schema s2) {
         Set<Procedure> s1Procedures = s1.getProcedures();
         Set<Procedure> s2Procedures = s2.getProcedures();
 
         s1Procedures.retainAll(s2Procedures);
         return s1Procedures;
+    }
+
+    public boolean equal() {
+        return tableNames1.isEmpty() && tableNames2.isEmpty()
+                && commonTablesDiffs.isEmpty()
+                && procedures1.isEmpty() && procedures2.isEmpty();
     }
 }
