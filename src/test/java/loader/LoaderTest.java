@@ -3,6 +3,7 @@ package loader;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.ibatis.jdbc.ScriptRunner;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import structure.*;
@@ -24,32 +25,24 @@ import static structure.ArgumentType.*;
 import static utils.Utils.*;
 
 public class LoaderTest {
-    static String url;
     static String catalog;
-    static String username;
-    static String password;
     static Loader loader;
     static Schema schema;
     static Set<Table> tables;
+    static Connection connection;
 
     @BeforeAll
     public static void setUp() {
         String configFileName = "src/test/java/loader/config.json";
         try {
-            // Read config file
+            // Read config file and set up connection
             JsonNode config = loadConfig(configFileName);
-
-            url = config.get("url").asText();
             catalog = config.get("catalog").asText();
-            username = config.get("username").asText();
-            password = config.get("password").asText();
 
-            Connection connection = getConnection(configFileName);
-            initializeDatabase(connection, "db_compare_test");
-
+            connection = getConnection(configFileName, catalog);
+            initializeDatabase(connection, catalog);
 
             // Run initialization script
-
             ScriptRunner scriptRunner = new ScriptRunner(connection);
             scriptRunner.runScript(new FileReader(System.getProperty("user.dir") + "/src/test/java/loader/test-script.sql"));
 
@@ -58,10 +51,19 @@ public class LoaderTest {
             scriptRunner.runScript(new FileReader(System.getProperty("user.dir") + "/src/test/java/loader/procedure.sql"));
             scriptRunner.runScript(new FileReader(System.getProperty("user.dir") + "/src/test/java/loader/function.sql"));
 
-            loader = new MyLoader(url, catalog, username, password);
+            loader = new MyLoader(connection, catalog);
             schema = loader.loadSchema();
             tables = schema.getTables();
         } catch (IOException | ClassNotFoundException | SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @AfterAll
+    public static void tearDown() {
+        try {
+            finalizeDatabase(connection, "db_compare_test");
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
