@@ -7,7 +7,6 @@ import loader.MyLoader;
 import structure.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import structure.Schema;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -62,9 +61,28 @@ public class DifferentDatabasesTest {
 
     @Test
     public void testColumns() {
-        Table table1 = new Table("differentColumns");
-        Table table2 = new Table("differentColumns");
-        table1.addColumn(new Column("attr1", "INT", "10", true));
+        String tableName = "differentcolumns";
+        Table table1 = new Table(tableName);
+        Table table2 = new Table(tableName);
+
+        table1.addColumns(new HashSet<>(Arrays.asList(
+                new Column("attr2", "INT", "10", true),
+                new Column("attr3", "INT", "10", true),
+                new Column("attr4", "VARCHAR", "20", true),
+                new Column("attr5", "INT", "10", false))));
+        ;
+
+        table2.addColumns(new HashSet<>(Arrays.asList(
+                new Column("attrX", "INT", "10", true),
+                new Column("attr3", "DECIMAL", "10", true),
+                new Column("attr4", "VARCHAR", "30", true),
+                new Column("attr5", "INT", "10", true))));
+
+        Pair<Table, Table> expected = new Pair<>(table1, table2);
+        Pair<Table, Table> actual = comparator.getCommonTablesDiffs().stream()
+                .filter(p -> p.getKey().getName().equals(tableName)).findFirst().get();
+
+        assertEquals(expected, actual);
     }
 
     @Test

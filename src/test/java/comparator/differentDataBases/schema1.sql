@@ -2,10 +2,12 @@ create table uniqueTable1 (
     a int
 );
 
-create table differentColumns (
+create table differentcolumns (
     attr1 int,
     attr2 int,
-    attr3 varchar(20)
+    attr3 int,
+    attr4 varchar(20),
+    attr5 int not null
 );
 
 create table differentPks (

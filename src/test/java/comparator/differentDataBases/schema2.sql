@@ -6,10 +6,12 @@ create table uniqueTable3 (
     b varchar(20)
 );
 
-create table differentColumns (
+create table differentcolumns (
     attr1 int,
     attrX int,
-    attr3 varchar(30)
+    attr3 numeric(10, 2),
+    attr4 varchar(30),
+    attr5 int
 );
 
 create table differentPks (
