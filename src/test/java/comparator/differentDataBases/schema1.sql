@@ -16,3 +16,19 @@ create table differentPks (
     attr3 varchar(10) not null,
     PRIMARY KEY (attr1, attr2)
 );
+
+create table importedtable (
+    a int,
+    b int,
+    c int
+);
+
+create index idx1 on importedtable (a, b);
+create index idx2 on importedtable (b, c);
+
+create table differentfks (
+    a int,
+    b int,
+    c int,
+    foreign key (a, b) references importedtable (a, b)
+);

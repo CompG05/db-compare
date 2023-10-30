@@ -113,4 +113,29 @@ public class DifferentDatabasesTest {
 
         assertEquals(expected, actual);
     }
+
+    @Test
+    public void testForeignKeys() {
+        String tableName = "differentfks";
+        Table table1 = new Table(tableName);
+        Table table2 = new Table(tableName);
+
+        table1.addForeignKey(new ForeignKey(
+                new HashSet<>(Arrays.asList(new OrderedColumn("a", 1), new OrderedColumn("b", 2))),
+                "importedtable",
+                new HashSet<>(Arrays.asList(new OrderedColumn("a", 1), new OrderedColumn("b", 2)))));
+        table1.addIndex(new HashSet<>(Arrays.asList(new OrderedColumn("a", 1), new OrderedColumn("b", 2))));
+
+        table2.addForeignKey(new ForeignKey(
+                new HashSet<>(Arrays.asList(new OrderedColumn("b", 1), new OrderedColumn("c", 2))),
+                "importedtable",
+                new HashSet<>(Arrays.asList(new OrderedColumn("b", 1), new OrderedColumn("c", 2)))));
+        table2.addIndex(new HashSet<>(Arrays.asList(new OrderedColumn("b", 1), new OrderedColumn("c", 2))));
+
+        Pair<Table, Table> expected = new Pair<>(table1, table2);
+        Pair<Table, Table> actual = comparator.getCommonTablesDiffs().stream()
+                .filter(p -> p.getKey().getName().equals(tableName)).findFirst().get();
+
+        assertEquals(expected, actual);
+    }
 }
