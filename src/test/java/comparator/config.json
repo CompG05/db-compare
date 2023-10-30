@@ -2,6 +2,6 @@
   "url": "localhost:3306",
   "catalog1": "db_compare_test1",
   "catalog2": "db_compare_test2",
-  "username": "joel",
-  "password": ""
+  "username": "pablo",
+  "password": "rossi"
 }
