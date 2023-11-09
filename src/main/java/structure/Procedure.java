@@ -28,6 +28,10 @@ public class Procedure {
         arguments.add(argument);
     }
 
+    public void addArguments(Collection<Argument> arguments) {
+        this.arguments.addAll(arguments);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

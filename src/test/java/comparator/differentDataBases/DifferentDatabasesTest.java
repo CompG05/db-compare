@@ -145,8 +145,6 @@ public class DifferentDatabasesTest {
         Pair<Table, Table> expected = new Pair<>(table1, table2);
 
         Pair<Table, Table> actual = getCommonTableDiffs("differenttriggers");
-        System.out.println(actual.getKey());
-        System.out.println(actual.getValue());
 
         assertEquals(expected, actual);
     }
