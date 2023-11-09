@@ -9,6 +9,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class DBComparator {
+    Schema schema1;
+    Schema schema2;
     Set<String> tableNames1;
     Set<String> tableNames2;
     Set<Pair<Table, Table>> commonTablesDiffs;
@@ -16,10 +18,13 @@ public class DBComparator {
     Set<String> procedures2;
     Set<Pair<Procedure, Procedure>> commonProceduresDiffs;
 
-    private DBComparator(Set<String> tableNames1, Set<String> tableNames2,
+    private DBComparator(Schema schema1, Schema schema2,
+                         Set<String> tableNames1, Set<String> tableNames2,
                          Set<Pair<Table, Table>> commonTablesDiffs,
                          Set<String> procedures1, Set<String> procedures2,
                          Set<Pair<Procedure, Procedure>> commonProceduresDiffs) {
+        this.schema1 = schema1;
+        this.schema2 = schema2;
         this.tableNames1 = tableNames1;
         this.tableNames2 = tableNames2;
         this.commonTablesDiffs = commonTablesDiffs;
@@ -37,6 +42,7 @@ public class DBComparator {
         Set<Pair<Procedure, Procedure>> commonProceduresDiffs = getCommonProceduresDiffs(s1, s2);
 
         return new DBComparator(
+                s1, s2,
                 tableNames1, tableNames2,
                 commonTablesDiffs,
                 procedures1, procedures2,
@@ -44,12 +50,21 @@ public class DBComparator {
         );
     }
 
+
     private static Set<String> getUniqueTables(Schema s1, Schema s2) {
         Set<String> s1TableNames = s1.getTables().stream().map(Table::getName).collect(Collectors.toSet());
         Set<String> s2TableNames = s2.getTables().stream().map(Table::getName).collect(Collectors.toSet());
 
         s1TableNames.removeAll(s2TableNames);
         return s1TableNames;
+    }
+
+    public Schema getSchema1() {
+        return schema1;
+    }
+
+    public Schema getSchema2() {
+        return schema2;
     }
 
     public Pair<Set<String>, Set<String>> getUniqueTables() {
@@ -186,7 +201,6 @@ public class DBComparator {
         Procedure proc2 = new Procedure(proc.getName());
         Pair<Procedure, Procedure> pair = new Pair<>(proc1, proc2);
         boolean change = false;
-
 
         //Columns
         Set<Argument> args1 = proc.getArguments();
