@@ -8,9 +8,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Schema {
-    public String name;
-    public Set<Table> tables;
-    public Set<Procedure> procedures;
+    String name;
+    Set<Table> tables;
+    Set<Procedure> procedures;
 
     public Schema(String name) {
         this(name, new HashSet<>(), new HashSet<>());
@@ -20,6 +20,10 @@ public class Schema {
         this.name = name;
         this.tables = tables;
         this.procedures = procedures;
+    }
+
+    public String getName(){
+        return name;
     }
 
     public void addTable(Table table) {
