@@ -67,12 +67,15 @@ public class Procedure {
             lastPosition = position;
         }
 
-        if (sortedArguments.isEmpty())
-            sortedArgumentStrings = Collections.singletonList("...");
 
         StringBuilder str = new StringBuilder(name + "(");
 
-        str.append(String.join(", ", sortedArgumentStrings) + ")");
+        if (sortedArguments.isEmpty())
+            str.append("...)");
+        else
+            str.append("\n\t")
+                    .append(String.join("\n\t", sortedArgumentStrings))
+                    .append("\n)");
 
         Optional<Argument> returnArg = arguments.stream().filter(a -> a.type == ArgumentType.RETURN).findFirst();
         returnArg.ifPresent(a -> str.append(" returns " + a.dataType));

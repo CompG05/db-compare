@@ -54,7 +54,24 @@ public class Reporter {
         }
 
         printHeader(out, "UNIQUE PROCEDURES");
-        printAligned(out, uniqueProcedures1, uniqueProcedures2);
+        // printAligned(out, uniqueProcedures1, uniqueProcedures2);
+        Iterator<String> it1 = uniqueProcedures1.iterator();
+        Iterator<String> it2 = uniqueProcedures2.iterator();
+
+        while (it1.hasNext() && it2.hasNext()) {
+            printSideBySide(out, it1.next(), it2.next());
+            printRow(out, "", "");
+        }
+
+        while (it1.hasNext()) {
+            printSideBySide(out, it1.next(), "");
+        printRow(out, "", "");
+    }
+
+        while (it2.hasNext()) {
+            printSideBySide(out, "", it2.next());
+            printRow(out, "", "");
+        }
 
         printHeader(out, "COMMON PROCEDURES");
         for (Pair<String, String> pair : commonProcedures) {
