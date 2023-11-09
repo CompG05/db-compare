@@ -1,7 +1,7 @@
 package comparator.reporter;
 
 import comparator.DBComparator;
-import javafx.util.Pair;
+import utils.Pair;
 import structure.Argument;
 import structure.ArgumentType;
 import structure.Procedure;

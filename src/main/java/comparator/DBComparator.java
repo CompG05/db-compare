@@ -1,6 +1,6 @@
 package comparator;
 
-import javafx.util.Pair;
+import utils.Pair;
 import structure.*;
 
 import java.util.HashSet;
