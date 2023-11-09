@@ -14,14 +14,14 @@ public class DBComparator {
     Set<String> tableNames1;
     Set<String> tableNames2;
     Set<Pair<Table, Table>> commonTablesDiffs;
-    Set<String> procedures1;
-    Set<String> procedures2;
+    Set<Procedure> procedures1;
+    Set<Procedure> procedures2;
     Set<Pair<Procedure, Procedure>> commonProceduresDiffs;
 
     private DBComparator(Schema schema1, Schema schema2,
                          Set<String> tableNames1, Set<String> tableNames2,
                          Set<Pair<Table, Table>> commonTablesDiffs,
-                         Set<String> procedures1, Set<String> procedures2,
+                         Set<Procedure> procedures1, Set<Procedure> procedures2,
                          Set<Pair<Procedure, Procedure>> commonProceduresDiffs) {
         this.schema1 = schema1;
         this.schema2 = schema2;
@@ -37,8 +37,8 @@ public class DBComparator {
         Set<String> tableNames1 = getUniqueTables(s1, s2);
         Set<String> tableNames2 = getUniqueTables(s2, s1);
         Set<Pair<Table, Table>> commonTablesDiffs = getCommonTablesDiffs(s1, s2);
-        Set<String> procedures1 = getUniqueProcedures(s1, s2);
-        Set<String> procedures2 = getUniqueProcedures(s2, s1);
+        Set<Procedure> procedures1 = getUniqueProcedures(s1, s2);
+        Set<Procedure> procedures2 = getUniqueProcedures(s2, s1);
         Set<Pair<Procedure, Procedure>> commonProceduresDiffs = getCommonProceduresDiffs(s1, s2);
 
         return new DBComparator(
@@ -165,15 +165,13 @@ public class DBComparator {
         else return Optional.empty();
     }
 
-    private static Set<String> getUniqueProcedures(Schema s1, Schema s2) {
-        Set<String> s1Procedures = s1.getProcedures().stream().map(Procedure::getName).collect(Collectors.toSet());
-        Set<String> s2Procedures = s2.getProcedures().stream().map(Procedure::getName).collect(Collectors.toSet());
+    private static Set<Procedure> getUniqueProcedures(Schema s1, Schema s2) {
+        Set<String> s2ProcedureNames = s2.getProcedures().stream().map(Procedure::getName).collect(Collectors.toSet());
 
-        s1Procedures.removeAll(s2Procedures);
-        return s1Procedures;
+        return s1.getProcedures().stream().filter(p -> !s2ProcedureNames.contains(p.getName())).collect(Collectors.toSet());
     }
 
-    public Pair<Set<String>, Set<String>> getUniqueProcedures() {
+    public Pair<Set<Procedure>, Set<Procedure>> getUniqueProcedures() {
         return new Pair<>(new HashSet<>(procedures1), new HashSet<>(procedures2));
     }
 
