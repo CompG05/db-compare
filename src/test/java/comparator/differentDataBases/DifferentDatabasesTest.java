@@ -29,11 +29,16 @@ public class DifferentDatabasesTest {
     public static void setUp() {
         try {
             String configFilename = "src/test/java/comparator/config.json";
+            String path = "src/test/java/comparator/differentDataBases/";
             Connection connection = getConnection(configFilename);
             initializeDatabase(connection, "schema1");
             runScript(connection, "src/test/java/comparator/differentDataBases/schema1.sql");
+            runScript(connection, path + "procdiff1.sql", true);
+            runScript(connection, path + "funcdiff1.sql", true);
             initializeDatabase(connection, "schema2");
             runScript(connection, "src/test/java/comparator/differentDataBases/schema2.sql");
+            runScript(connection, path + "procdiff2.sql", true);
+            runScript(connection, path + "funcdiff2.sql", true);
 
             connection1 = getConnection(configFilename, "schema1");
             connection2 = getConnection(configFilename, "schema2");
@@ -137,5 +142,32 @@ public class DifferentDatabasesTest {
                 .filter(p -> p.getKey().getName().equals(tableName)).findFirst().get();
 
         assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testProcedures() {
+        Procedure proc1 = new Procedure("example_procedure",
+                new HashSet<>(Arrays.asList(new Argument("arg1", 1, ArgumentType.IN, "INT"),
+                        new Argument("arg2", 2, ArgumentType.INOUT, "INT"))));
+
+        Procedure proc2 = new Procedure("example_procedure",
+                new HashSet<>(Arrays.asList(new Argument("arg1", 1, ArgumentType.IN, "INT"),
+                        new Argument("arg2", 2, ArgumentType.IN, "INT"))));
+
+        Procedure func1 = new Procedure("example_function",
+                new HashSet<>(Arrays.asList(new Argument("arg1", 1, ArgumentType.IN, "INT"),
+                        new Argument("arg2", 2, ArgumentType.IN, "INT"),
+                        new Argument("", 0, ArgumentType.RETURN, "INT"))));
+
+        Procedure func2 = new Procedure("example_function",
+                new HashSet<>(Arrays.asList(new Argument("arg1", 1, ArgumentType.IN, "INT"),
+                        new Argument("arg2", 2, ArgumentType.IN, "INT"),
+                        new Argument("", 0, ArgumentType.RETURN, "FLOAT"))));
+
+        Pair<Set<Procedure>, Set<Procedure>> expected = new Pair<>(
+                new HashSet<>(Arrays.asList(proc1, func1)),
+                new HashSet<>(Arrays.asList(proc2, func2)));
+
+        assertEquals(expected, comparator.getUniqueProcedures());
     }
 }

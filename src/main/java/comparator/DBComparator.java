@@ -149,8 +149,12 @@ public class DBComparator {
         Set<Procedure> s1Procedures = s1.getProcedures();
         Set<Procedure> s2Procedures = s2.getProcedures();
 
-        s1Procedures.retainAll(s2Procedures);
+        s1Procedures.removeAll(s2Procedures);
         return s1Procedures;
+    }
+
+    public Pair<Set<Procedure>, Set<Procedure>> getUniqueProcedures() {
+        return new Pair<>(new HashSet<>(procedures1), new HashSet<>(procedures2));
     }
 
     public boolean equal() {
