@@ -194,6 +194,7 @@ public class DBComparator {
         return commonProceduresDiffs;
     }
 
+    // Precondition: proc.name = otherProc.name
     private static Optional<Pair<Procedure, Procedure>> compareProcedures(Procedure proc, Procedure otherProc) {
         Procedure proc1 = new Procedure(proc.getName());
         Procedure proc2 = new Procedure(proc.getName());
@@ -206,11 +207,7 @@ public class DBComparator {
 
         if (!args1.equals(args2)) {
             change = true;
-            args1.removeAll(args2);
             proc1.addArguments(args1);
-
-            args1 = proc.getArguments();
-            args2.removeAll(args1);
             proc2.addArguments(args2);
         }
 

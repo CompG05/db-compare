@@ -2,6 +2,8 @@ package comparator.reporter;
 
 import comparator.DBComparator;
 import javafx.util.Pair;
+import structure.Argument;
+import structure.ArgumentType;
 import structure.Procedure;
 
 import java.io.FileNotFoundException;
@@ -32,9 +34,10 @@ public class Reporter {
                 .map(Procedure::toString).collect(Collectors.toSet());
         this.uniqueProcedures2 = comparator.getUniqueProcedures().getValue().stream()
                 .map(Procedure::toString).collect(Collectors.toSet());
-        this.commonProcedures = comparator.getCommonProceduresDiffs().stream()
-                .map(p -> new Pair<>(p.getKey().toString(), p.getValue().toString()))
-                .collect(Collectors.toSet());
+//        this.commonProcedures = comparator.getCommonProceduresDiffs().stream()
+//                .map(p -> new Pair<>(p.getKey().toString(), p.getValue().toString()))
+//                .collect(Collectors.toSet());
+        this.commonProcedures = removeCommonArgs(comparator.getCommonProceduresDiffs());
 
         computeColumnWidth();
     }
@@ -165,5 +168,65 @@ public class Reporter {
         for (String procedure : commonProcedures.stream().map(Pair::getKey).collect(Collectors.toSet()))
             for (String line : procedure.replace("\t", "  ").split("\n"))
                 columnWidth = Math.max(columnWidth, line.length());
+    }
+
+    private Set<Pair<String, String>> removeCommonArgs(Set<Pair<Procedure, Procedure>> commonProceduresDiffs) {
+        Set<Pair<String, String>> result = new HashSet<>();
+        Procedure p1, p2;
+        List<Argument> args1, args2;
+        String[] argsStr1, argsStr2;
+
+        for (Pair<Procedure, Procedure> pair : commonProceduresDiffs) {
+            p1 = pair.getKey();
+            p2 = pair.getValue();
+            final StringBuilder s1 = new StringBuilder(p1.getName() + '(');
+            final StringBuilder s2 = new StringBuilder(p2.getName() + '(');
+
+            args1 = p1.getArguments().stream()
+                    .filter(a -> a.getType() != ArgumentType.RETURN)
+                    .sorted(Comparator.comparingInt(Argument::getOrder))
+                    .collect(Collectors.toList());
+            args2 = p2.getArguments().stream()
+                    .filter(a -> a.getType() != ArgumentType.RETURN)
+                    .sorted(Comparator.comparingInt(Argument::getOrder))
+                    .collect(Collectors.toList());
+            argsStr1 = new String[args1.size()];
+            argsStr2 = new String[args2.size()];
+
+            for (int i = 0; i < Math.max(args1.size(), args2.size()); i++) {
+                if (i < args1.size() && i < args2.size())
+                    if (args1.get(i).equals(args2.get(i))) {
+                        argsStr1[i] = "_";
+                        argsStr2[i] = "_";
+                    } else {
+                        argsStr1[i] = args1.get(i).toString();
+                        argsStr2[i] = args2.get(i).toString();
+                    }
+                else {
+                    if (i < args1.size())
+                        argsStr1[i] = args1.get(i).toString();
+                    if (i < args2.size())
+                        argsStr2[i] = args2.get(i).toString();
+                }
+            }
+
+            if (argsStr1.length > 0)
+                s1.append("\n\t").append(String.join(",\n\t", argsStr1)).append("\n)");
+            else
+                s1.append(')');
+            if (argsStr2.length > 0)
+                s2.append("\n\t").append(String.join(",\n\t", argsStr2)).append("\n)");
+            else
+                s2.append(')');
+
+            Optional<Argument> returnArg1 = p1.getArguments().stream().filter(a -> a.getType() == ArgumentType.RETURN).findFirst();
+            Optional<Argument> returnArg2 = p2.getArguments().stream().filter(a -> a.getType() == ArgumentType.RETURN).findFirst();
+            returnArg1.ifPresent(a -> s1.append(" returns " + a.getDataType()));
+            returnArg2.ifPresent(a -> s2.append(" returns " + a.getDataType()));
+
+            result.add(new Pair<>(s1.toString(), s2.toString()));
+        }
+
+        return result;
     }
 }
