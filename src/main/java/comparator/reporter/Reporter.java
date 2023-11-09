@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 
 public class Reporter {
     DBComparator comparator;
-    String rowFormat, headerFormat;
     int columnWidth;
     String schemaName1, schemaName2;
     Set<String> uniqueTables1, uniqueTables2;
