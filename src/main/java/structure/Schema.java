@@ -69,4 +69,12 @@ public class Schema {
         }
         return Optional.empty();
     }
+
+    public Optional<Procedure> getProcedure(String name) {
+        for (Procedure proc: procedures) {
+            if (proc.getName().equals(name))
+                return Optional.of(proc);
+        }
+        return Optional.empty();
+    }
 }

@@ -7,6 +7,7 @@ import loader.MyLoader;
 import structure.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import structure.Schema;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -35,10 +36,17 @@ public class DifferentDatabasesTest {
             runScript(connection, "src/test/java/comparator/differentDataBases/schema1.sql");
             runScript(connection, path + "procdiff1.sql", true);
             runScript(connection, path + "funcdiff1.sql", true);
+            runScript(connection, "src/test/java/comparator/differentDataBases/triggerInCommon.sql", true);
+            runScript(connection, "src/test/java/comparator/differentDataBases/s1-trigger2.sql", true);
+            runScript(connection, "src/test/java/comparator/differentDataBases/s1-trigger3.sql", true);
+
             initializeDatabase(connection, "schema2");
             runScript(connection, "src/test/java/comparator/differentDataBases/schema2.sql");
             runScript(connection, path + "procdiff2.sql", true);
             runScript(connection, path + "funcdiff2.sql", true);
+            runScript(connection, "src/test/java/comparator/differentDataBases/triggerInCommon.sql", true);
+            runScript(connection, "src/test/java/comparator/differentDataBases/s2-trigger2.sql", true);
+            runScript(connection, "src/test/java/comparator/differentDataBases/s2-trigger3.sql", true);
 
             connection1 = getConnection(configFilename, "schema1");
             connection2 = getConnection(configFilename, "schema2");
@@ -114,9 +122,59 @@ public class DifferentDatabasesTest {
 
         Pair<Table, Table> expected = new Pair<>(table1, table2);
 
-        Pair<Table, Table> actual = comparator.getCommonTablesDiffs().stream().filter((p) -> p.getKey().getName().equals("differentpks")).findFirst().get();
+        Pair<Table, Table> actual = getCommonTableDiffs("differentpks");
 
         assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testIndices() {
+        Table table1 = new Table("differentindices");
+        Table table2 = new Table("differentindices");
+
+        table1.addIndex(new HashSet<>(Arrays.asList(
+                new OrderedColumn("attr1",1),
+                new OrderedColumn("attr2",2)
+        )));
+        table1.addIndex(new HashSet<>(Collections.singletonList(
+                new OrderedColumn("attr3", 1)
+        )));
+
+        table2.addIndex(new HashSet<>(Arrays.asList(
+                new OrderedColumn("attr1",1),
+                new OrderedColumn("attr3",2)
+        )));
+
+        Pair<Table, Table> expected = new Pair<>(table1, table2);
+
+        Pair<Table, Table> actual = getCommonTableDiffs("differentindices");
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testTriggers() {
+        Table table1 = new Table("differenttriggers");
+        Table table2 = new Table("differenttriggers");
+
+        table1.addTriggers(Arrays.asList(
+                new Trigger("trigger2", "BEFORE", "INSERT"),
+                new Trigger("trigger3", "BEFORE", "UPDATE")
+        ));
+        table2.addTriggers(Arrays.asList(
+                new Trigger("trigger2", "AFTER", "INSERT"),
+                new Trigger("trigger3", "BEFORE", "INSERT")
+        ));
+
+        Pair<Table, Table> expected = new Pair<>(table1, table2);
+
+        Pair<Table, Table> actual = getCommonTableDiffs("differenttriggers");
+
+        assertEquals(expected, actual);
+    }
+
+    private static Pair<Table, Table> getCommonTableDiffs(String tableName){
+        return comparator.getCommonTablesDiffs().stream().filter((p) -> p.getKey().getName().equals(tableName)).findFirst().get();
     }
 
     @Test

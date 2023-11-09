@@ -1,8 +1,8 @@
-create table uniqueTable2 (
+create table uniquetable2 (
     a int
 );
 
-create table uniqueTable3 (
+create table uniquetable3 (
     b varchar(20)
 );
 
@@ -14,11 +14,26 @@ create table differentcolumns (
     attr5 int
 );
 
-create table differentPks (
+create table differentpks (
     attr1 int not null,
     attr2 int not null,
     attr3 varchar(10) not null,
     PRIMARY KEY (attr1, attr3)
+);
+
+create table differentindices (
+    attr1 int not null,
+    attr2 int not null,
+    attr3 int not null,
+    attr4 int not null,
+    UNIQUE(attr4),
+    UNIQUE(attr1, attr3)
+);
+
+create table differenttriggers (
+    attr1 int not null,
+    attr2 varchar(20) not null,
+    attr3 float not null
 );
 create table importedtable (
     a int,
