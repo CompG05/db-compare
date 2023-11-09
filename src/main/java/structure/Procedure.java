@@ -21,7 +21,7 @@ public class Procedure {
     }
 
     public Set<Argument> getArguments() {
-        return arguments;
+        return new HashSet<>(arguments);
     }
 
     public void addArgument(Argument argument) {

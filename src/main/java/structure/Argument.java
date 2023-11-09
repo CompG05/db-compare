@@ -36,12 +36,12 @@ public class Argument {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Argument argument = (Argument) o;
-        return order == argument.order && Objects.equals(name, argument.name) && type == argument.type && Objects.equals(dataType, argument.dataType);
+        return order == argument.order && type == argument.type && Objects.equals(dataType, argument.dataType);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, order, type, dataType);
+        return Objects.hash(order, type, dataType);
     }
 
     @Override
