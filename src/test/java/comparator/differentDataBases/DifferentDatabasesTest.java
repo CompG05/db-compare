@@ -1,7 +1,7 @@
 package comparator.differentDataBases;
 
 import comparator.DBComparator;
-import javafx.util.Pair;
+import utils.Pair;
 import loader.Loader;
 import loader.MyLoader;
 import structure.*;
