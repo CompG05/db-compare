@@ -1,7 +1,8 @@
 {
   "url": "localhost:3306",
-  "catalog1": "db_compare_test1",
-  "catalog2": "db_compare_test2",
-  "username": "pablo",
-  "password": "rossi"
+  "catalog1": "schema1",
+  "catalog2": "schema2",
+  "username": "joel",
+  "password": ""
 }
+

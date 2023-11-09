@@ -5,6 +5,8 @@ import utils.Pair;
 import loader.Loader;
 import loader.MyLoader;
 import structure.*;
+
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import structure.Schema;
@@ -34,7 +36,6 @@ public class DifferentDatabasesTest {
             Connection connection = getConnection(configFilename);
             initializeDatabase(connection, "schema1");
             runScript(connection, "src/test/java/comparator/differentDataBases/schema1.sql");
-            runScript(connection, path + "procdiff.sql", true);
             runScript(connection, path + "procdiff1.sql", true);
             runScript(connection, path + "funcdiff1.sql", true);
             runScript(connection, "src/test/java/comparator/differentDataBases/triggerInCommon.sql", true);
@@ -59,6 +60,16 @@ public class DifferentDatabasesTest {
             Schema schema2 = loader2.loadSchema();
             comparator = DBComparator.of(schema1, schema2);
         } catch (SQLException | IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @AfterAll
+    public static void tearDown() {
+        try {
+            finalizeDatabase(connection1, "schema1");
+            finalizeDatabase(connection2, "schema2");
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
@@ -204,29 +215,35 @@ public class DifferentDatabasesTest {
     }
 
     @Test
-    public void testProcedures() {
+    public void testProcedureArguments() {
         Procedure proc1 = new Procedure("example_procedure",
-                new HashSet<>(Arrays.asList(new Argument("arg1", 1, ArgumentType.IN, "INT"),
-                        new Argument("arg2", 2, ArgumentType.INOUT, "INT"))));
+                new HashSet<>(Arrays.asList(
+                        new Argument("arg1", 1, ArgumentType.IN, "INT"),
+                        new Argument("arg2", 2, ArgumentType.INOUT, "INT"),
+                        new Argument("arg3", 3, ArgumentType.IN, "VARCHAR"),
+                        new Argument("arg4", 4, ArgumentType.OUT, "DATE"))));
 
         Procedure proc2 = new Procedure("example_procedure",
-                new HashSet<>(Arrays.asList(new Argument("arg1", 1, ArgumentType.IN, "INT"),
+                new HashSet<>(Arrays.asList(
+                        new Argument("arg1", 1, ArgumentType.IN, "INT"),
                         new Argument("arg2", 2, ArgumentType.IN, "INT"))));
 
         Procedure func1 = new Procedure("example_function",
-                new HashSet<>(Arrays.asList(new Argument("arg1", 1, ArgumentType.IN, "INT"),
+                new HashSet<>(Arrays.asList(
+                        new Argument("arg1", 1, ArgumentType.IN, "INT"),
                         new Argument("arg2", 2, ArgumentType.IN, "INT"),
                         new Argument("", 0, ArgumentType.RETURN, "INT"))));
 
         Procedure func2 = new Procedure("example_function",
-                new HashSet<>(Arrays.asList(new Argument("arg1", 1, ArgumentType.IN, "INT"),
+                new HashSet<>(Arrays.asList(
+                        new Argument("arg1", 1, ArgumentType.IN, "INT"),
                         new Argument("arg2", 2, ArgumentType.IN, "INT"),
                         new Argument("", 0, ArgumentType.RETURN, "FLOAT"))));
 
-        Pair<Set<Procedure>, Set<Procedure>> expected = new Pair<>(
-                new HashSet<>(Arrays.asList(proc1, func1)),
-                new HashSet<>(Arrays.asList(proc2, func2)));
+        Set<Pair<Procedure, Procedure>> expected = new HashSet<>(Arrays.asList(
+                new Pair<>(proc1, proc2),
+                new Pair<>(func1, func2)));
 
-        assertEquals(expected, comparator.getUniqueProcedures());
+        assertEquals(expected, comparator.getCommonProceduresDiffs());
     }
 }
