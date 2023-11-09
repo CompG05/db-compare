@@ -47,11 +47,36 @@ public class Procedure {
 
     @Override
     public String toString() {
-        return name + "(" +
-                arguments
-                        .stream().sorted(Comparator.comparingInt(Argument::getOrder))
-                        .map(Argument::toString)
-                        .collect(Collectors.joining(", "))
-                + ")";
+        List<Argument> sortedArguments = arguments.stream()
+                .filter(a -> a.type != ArgumentType.RETURN)
+                .sorted(Comparator.comparingInt(Argument::getOrder))
+                .collect(Collectors.toList());
+
+        List<String> sortedArgumentStrings = new ArrayList<>();
+        int lastPosition = 0;
+        int position;
+
+        for (Argument arg : sortedArguments) {
+            position = arg.order;
+
+            // Fill missing arguments with '_'
+            for (int i = lastPosition+1; i < position; i++)
+                sortedArgumentStrings.add("_");
+
+            sortedArgumentStrings.add(arg.toString());
+            lastPosition = position;
+        }
+
+        if (sortedArguments.isEmpty())
+            sortedArgumentStrings = Collections.singletonList("...");
+
+        StringBuilder str = new StringBuilder(name + "(");
+
+        str.append(String.join(", ", sortedArgumentStrings) + ")");
+
+        Optional<Argument> returnArg = arguments.stream().filter(a -> a.type == ArgumentType.RETURN).findFirst();
+        returnArg.ifPresent(a -> str.append(" returns " + a.dataType));
+
+        return str.toString();
     }
 }
