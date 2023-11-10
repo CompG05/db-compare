@@ -1,0 +1,7 @@
+{
+  "url": "localhost:3306",
+  "catalog1": "schema1",
+  "catalog2": "schema2",
+  "username": "joel",
+  "password": ""
+}
