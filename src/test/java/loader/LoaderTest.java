@@ -39,8 +39,9 @@ public class LoaderTest {
             JsonNode config = loadConfig(configFileName);
             catalog = config.get("catalog").asText();
 
-            connection = getConnection(configFileName, catalog);
+            connection = getConnection(configFileName);
             initializeDatabase(connection, catalog);
+            connection = getConnection(configFileName, catalog);
 
             // Run initialization script
             ScriptRunner scriptRunner = new ScriptRunner(connection);

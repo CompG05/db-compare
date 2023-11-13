@@ -27,12 +27,20 @@ public class EqualDatabasesTest {
             String configFilename = "src/test/java/comparator/config.json";
             Connection connection = getConnection(configFilename);
             initializeDatabase(connection, "schema1");
-            runScript(connection, "src/test/java/comparator/equalDataBases/schema1.sql");
             initializeDatabase(connection, "schema2");
-            runScript(connection, "src/test/java/comparator/equalDataBases/schema2.sql");
 
             connection1 = getConnection(configFilename, "schema1");
             connection2 = getConnection(configFilename, "schema2");
+
+            String path = "src/test/java/comparator/equalDataBases";
+
+            runScript(connection1, path + "/schema.sql");
+            runScript(connection1, path + "/trigger.sql", true);
+            runScript(connection1, path + "/proc.sql", true);
+
+            runScript(connection2, path + "/schema.sql");
+            runScript(connection2, path + "/trigger.sql", true);
+            runScript(connection2, path + "/proc.sql", true);
 
             Loader loader1 = new MyLoader(connection1, "schema1");
             Loader loader2 = new MyLoader(connection2, "schema2");
