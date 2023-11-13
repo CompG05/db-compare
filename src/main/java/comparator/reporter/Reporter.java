@@ -10,7 +10,11 @@ import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.*;
 import java.util.stream.Collectors;
-
+/**
+ * Reporter class
+ * Prints a report of the differences between two schemas
+ * either to stdout or to a file
+ */
 public class Reporter {
     DBComparator comparator;
     int columnWidth;
@@ -21,26 +25,36 @@ public class Reporter {
     Set<Pair<String, String>> commonProcedures;
 
     public Reporter(DBComparator comparator) {
+        /*
+        Get the data from the comparator as convenient set of strings for easy formatting
+         */
         this.comparator = comparator;
         this.schemaName1 = comparator.getSchema1().getName();
         this.schemaName2 = comparator.getSchema2().getName();
+
         this.uniqueTables1 = comparator.getUniqueTables().getKey();
         this.uniqueTables2 = comparator.getUniqueTables().getValue();
+
+        // Convert the set of pairs of tables to a set of pairs of strings
         this.commonTables = comparator.getCommonTablesDiffs().stream()
                 .map(p -> new Pair<>(p.getKey().toString(), p.getValue().toString()))
                 .collect(Collectors.toSet());
+
+        // Convert the set of pairs of procedures to a set of strings
         this.uniqueProcedures1 = comparator.getUniqueProcedures().getKey().stream()
                 .map(Procedure::toString).collect(Collectors.toSet());
         this.uniqueProcedures2 = comparator.getUniqueProcedures().getValue().stream()
                 .map(Procedure::toString).collect(Collectors.toSet());
-//        this.commonProcedures = comparator.getCommonProceduresDiffs().stream()
-//                .map(p -> new Pair<>(p.getKey().toString(), p.getValue().toString()))
-//                .collect(Collectors.toSet());
+
         this.commonProcedures = removeCommonArgs(comparator.getCommonProceduresDiffs());
 
         computeColumnWidth();
     }
 
+    /**
+     * Prints a report to the given PrintStream
+     * @param out the PrintStream to print to
+     */
     private void report(PrintStream out) {
         printTopBorder(out);
 
@@ -52,11 +66,10 @@ public class Reporter {
         printHeader(out, "COMMON TABLES");
         for (Pair<String, String> pair : commonTables) {
             printSideBySide(out, pair.getKey(), pair.getValue());
-            printRow(out, "", "");
+            printRow(out, "", "");  // empty row for spacing
         }
 
         printHeader(out, "UNIQUE PROCEDURES");
-        // printAligned(out, uniqueProcedures1, uniqueProcedures2);
         Iterator<String> it1 = uniqueProcedures1.iterator();
         Iterator<String> it2 = uniqueProcedures2.iterator();
 
@@ -68,7 +81,7 @@ public class Reporter {
         while (it1.hasNext()) {
             printSideBySide(out, it1.next(), "");
         printRow(out, "", "");
-    }
+        }
 
         while (it2.hasNext()) {
             printSideBySide(out, "", it2.next());
@@ -84,11 +97,17 @@ public class Reporter {
         printBottomBorder(out);
     }
 
-    // Prints a report to stdout
+    /**
+     * Prints a report to stdout
+     */
     public void report() {
         report(System.out);
     }
 
+    /**
+     * Prints a report to a file
+     * @param outputFilename the name of the file to print to
+     */
     public void report(String outputFilename) {
         try {
             PrintStream stream = new PrintStream(outputFilename);
@@ -169,6 +188,12 @@ public class Reporter {
                 columnWidth = Math.max(columnWidth, line.length());
     }
 
+    /**
+     * Convert the pairs of procedures to pairs of strings
+     * where common arguments are replaced by '_'
+     * @param commonProceduresDiffs the set of common procedures
+     * @return a set of pairs of strings representing the procedures
+     */
     private Set<Pair<String, String>> removeCommonArgs(Set<Pair<Procedure, Procedure>> commonProceduresDiffs) {
         Set<Pair<String, String>> result = new HashSet<>();
         Procedure p1, p2;
