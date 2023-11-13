@@ -2,6 +2,9 @@ package structure;
 
 import java.util.Objects;
 
+/**
+ * Argument class
+ */
 public class Argument {
     String name;
     int order;

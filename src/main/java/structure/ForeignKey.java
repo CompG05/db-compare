@@ -4,6 +4,14 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ *  Foreign Key class
+ *  contains the name of the referenced table
+ *  and a set of:
+ *      columns of the current table
+ *      columns of the referenced table
+ *  both represented as a set of OrderedColumn
+ */
 public class ForeignKey {
     Set<OrderedColumn> columns;
     String referencedTable;
@@ -19,14 +27,6 @@ public class ForeignKey {
         this.referencedColumns = referencedColumns;
     }
 
-    public void addColumn(OrderedColumn columnName) {
-        columns.add(columnName);
-    }
-
-    public void addReferencedColumn(OrderedColumn referencedColumn) {
-        referencedColumns.add(referencedColumn);
-    }
-
     public Set<OrderedColumn> getColumns() {
         return columns;
     }
@@ -37,6 +37,14 @@ public class ForeignKey {
 
     public Set<OrderedColumn> getReferencedColumns() {
         return referencedColumns;
+    }
+
+    public void addColumn(OrderedColumn columnName) {
+        columns.add(columnName);
+    }
+
+    public void addReferencedColumn(OrderedColumn referencedColumn) {
+        referencedColumns.add(referencedColumn);
     }
 
     @Override

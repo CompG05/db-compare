@@ -7,6 +7,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Schema class
+ * Contains a set of tables and procedures
+ */
 public class Schema {
     String name;
     Set<Table> tables;
@@ -26,20 +30,20 @@ public class Schema {
         return name;
     }
 
-    public void addTable(Table table) {
-        tables.add(table);
-    }
-
     public Set<Table> getTables() {
         return tables;
     }
 
-    public void addProcedure(Procedure procedure) {
-        procedures.add(procedure);
-    }
-
     public Set<Procedure> getProcedures() {
         return new HashSet<>(procedures);
+    }
+
+    public void addTable(Table table) {
+        tables.add(table);
+    }
+
+    public void addProcedure(Procedure procedure) {
+        procedures.add(procedure);
     }
 
     @Override
@@ -66,6 +70,11 @@ public class Schema {
                 "\n";
     }
 
+    /**
+     * Search for a table with a given name
+     * @param name of a table
+     * @return a table if it exists, empty otherwise
+     */
     public Optional<Table> getTable(String name) {
         for (Table table : tables) {
             if (table.getName().equals(name))
@@ -74,6 +83,11 @@ public class Schema {
         return Optional.empty();
     }
 
+    /**
+     * Search for a procedure with a given name
+     * @param name of a procedure
+     * @return a procedure if it exists, empty otherwise
+     */
     public Optional<Procedure> getProcedure(String name) {
         for (Procedure proc: procedures) {
             if (proc.getName().equals(name))

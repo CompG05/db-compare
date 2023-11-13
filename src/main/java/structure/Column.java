@@ -2,6 +2,9 @@ package structure;
 
 import java.util.Objects;
 
+/**
+ * Column class
+ */
 public class Column {
     String name;
     String typeName;

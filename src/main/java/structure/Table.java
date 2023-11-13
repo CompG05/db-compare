@@ -2,6 +2,15 @@ package structure;
 
 import java.util.*;
 
+/**
+ * Table class
+ * contains one primary key and set of:
+ *          Columns,
+ *          ForeignKeys,
+ *          Triggers,
+ *          Indices
+ * PrimaryKey and Indices are represented as a set of OrderedColumn
+ */
 public class Table {
     String name;
     Set<Column> columns;
@@ -31,16 +40,28 @@ public class Table {
         return new HashSet<>(columns);
     }
 
+    public Set<OrderedColumn> getPrimaryKey() {
+        return new HashSet<>(primaryKey);
+    }
+
+    public Set<Set<OrderedColumn>> getIndices() {
+        return new HashSet<>(indices);
+    }
+
+    public Set<ForeignKey> getForeignKeys() {
+        return foreignKeys;
+    }
+
+    public Set<Trigger> getTriggers() {
+        return new HashSet<>(triggers);
+    }
+
     public void addColumn(Column column) {
         columns.add(column);
     }
 
     public void addColumns(Collection<Column> columns) {
         this.columns.addAll(columns);
-    }
-
-    public Set<OrderedColumn> getPrimaryKey() {
-        return new HashSet<>(primaryKey);
     }
 
     public void addPrimaryKeyColumn(OrderedColumn primaryKey) {
@@ -55,10 +76,6 @@ public class Table {
         this.primaryKey.addAll(primaryKeys);
     }
 
-    public Set<Set<OrderedColumn>> getIndices() {
-        return new HashSet<>(indices);
-    }
-
     public void addIndex(Set<OrderedColumn> index) {
         this.indices.add(index);
     }
@@ -67,20 +84,12 @@ public class Table {
         this.indices.addAll(indices);
     }
 
-    public Set<ForeignKey> getForeignKeys() {
-        return foreignKeys;
-    }
-
     public void addForeignKey(ForeignKey foreignKey) {
         foreignKeys.add(foreignKey);
     }
 
     public void addForeignKeys(Collection<ForeignKey> foreignKeys) {
         this.foreignKeys.addAll(foreignKeys);
-    }
-
-    public Set<Trigger> getTriggers() {
-        return new HashSet<>(triggers);
     }
 
     public void addTrigger(Trigger trigger) {
@@ -109,15 +118,18 @@ public class Table {
         StringBuilder str = new StringBuilder();
         str.append("Table ").append(name).append('\n');
 
+        //print columns
         for (Column column : columns)
             str.append("\t\t\t").append(column.toString()).append('\n');
 
+        //print primary key
         if (!primaryKey.isEmpty()) {
             str.append("\t\t\tPRIMARY KEY (")
                     .append(String.join(", ", OrderedColumn.getSorted(primaryKey)))
                     .append(")\n");
         }
 
+        //print indices
         if (!indices.isEmpty()) {
             for (Set<OrderedColumn> index : indices)
                 str.append("\t\t\tINDEX (")
@@ -125,9 +137,11 @@ public class Table {
                         .append(")\n");
         }
 
+        //print foreign keys
         for (ForeignKey foreignKey : foreignKeys)
             str.append("\t\t\t").append(foreignKey.toString()).append('\n');
 
+        //print triggers
         for (Trigger trigger : triggers)
             str.append("\t\t\t").append(trigger.toString()).append('\n');
 

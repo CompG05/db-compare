@@ -2,6 +2,9 @@ package structure;
 
 import java.util.Objects;
 
+/**
+ * Trigger class
+ */
 public class Trigger {
     String name;
     String actionTiming;

@@ -6,6 +6,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * OrderedColumn class
+ * contains the name of a column and its order (usually the order in an index)
+ */
 public class OrderedColumn {
     private String column;
     private int order;
@@ -19,12 +23,12 @@ public class OrderedColumn {
         return column;
     }
 
-    public void setColumn(String column) {
-        this.column = column;
-    }
-
     public int getOrder() {
         return order;
+    }
+
+    public void setColumn(String column) {
+        this.column = column;
     }
 
     public void setOrder(int order) {
@@ -52,6 +56,11 @@ public class OrderedColumn {
                 + ')';
     }
 
+    /**
+     * Sort a set of OrderedColumn's by the order attribute
+     * @param orderedColumns, a set of OrderedColumn
+     * @return an ordered List of column names
+     */
     public static List<String> getSorted(Set<OrderedColumn> orderedColumns) {
         return orderedColumns.stream()
                 .sorted(Comparator.comparingInt(OrderedColumn::getOrder))

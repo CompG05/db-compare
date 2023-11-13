@@ -3,6 +3,9 @@ package structure;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Procedure class
+ */
 public class Procedure {
     String name;
     Set<Argument> arguments;
@@ -47,6 +50,8 @@ public class Procedure {
 
     @Override
     public String toString() {
+        // Sorting by the order argument
+        // Removing return argument
         List<Argument> sortedArguments = arguments.stream()
                 .filter(a -> a.type != ArgumentType.RETURN)
                 .sorted(Comparator.comparingInt(Argument::getOrder))
@@ -77,6 +82,7 @@ public class Procedure {
                     .append(String.join("\n\t", sortedArgumentStrings))
                     .append("\n)");
 
+        // Get the return argument
         Optional<Argument> returnArg = arguments.stream().filter(a -> a.type == ArgumentType.RETURN).findFirst();
         returnArg.ifPresent(a -> str.append(" returns " + a.dataType));
 
