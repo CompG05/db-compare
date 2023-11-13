@@ -56,6 +56,11 @@ public class Reporter {
      * @param out the PrintStream to print to
      */
     private void report(PrintStream out) {
+        if (comparator.equal()) {
+            out.println("The schemas are equal");
+            return;
+        }
+
         printTopBorder(out);
 
         printRow(out, schemaName1, schemaName2);
@@ -172,6 +177,7 @@ public class Reporter {
 
     private void computeColumnWidth() {
         columnWidth = Math.max(schemaName1.length(), schemaName2.length());
+        columnWidth = Math.max(columnWidth, 15);  // Set a minimum width of 15
 
         for (String uniqueTable : uniqueTables1)
             columnWidth = Math.max(columnWidth, uniqueTable.length());
