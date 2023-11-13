@@ -36,6 +36,7 @@ public class DifferentDatabasesTest {
             Connection connection = getConnection(configFilename);
             initializeDatabase(connection, "schema1");
             runScript(connection, "src/test/java/comparator/differentDataBases/schema1.sql");
+            runScript(connection, path + "procdiff.sql", true);
             runScript(connection, path + "procdiff1.sql", true);
             runScript(connection, path + "funcdiff1.sql", true);
             runScript(connection, "src/test/java/comparator/differentDataBases/triggerInCommon.sql", true);
